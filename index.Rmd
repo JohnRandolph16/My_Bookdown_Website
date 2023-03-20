@@ -1,5 +1,5 @@
 --- 
-title: "My First ttempt at a Bookdown Website"
+title: "Reproducible Science Final Roject"
 author: "John Randolph"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
@@ -8,7 +8,7 @@ bibliography: [book.bib, packages.bib]
 # url: your book url like https://bookdown.org/yihui/bookdown
 # cover-image: path to the social sharing image like images/cover.jpg
 description: |
-  This is the web page that we built to practice with bookdown during the Reproducible Science course 2023
+  This is a web page created for the final project during the Reproducible Science Course in 2023
 link-citations: yes
 github-repo: rstudio/bookdown-demo
 ---

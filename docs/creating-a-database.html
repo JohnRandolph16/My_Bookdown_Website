@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>References | Reproducible Science Final Roject</title>
+  <title>Chapter 2 Creating a database | Reproducible Science Final Roject</title>
   <meta name="description" content="This is a web page created for the final project during the Reproducible Science Course in 2023" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="References | Reproducible Science Final Roject" />
+  <meta property="og:title" content="Chapter 2 Creating a database | Reproducible Science Final Roject" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a web page created for the final project during the Reproducible Science Course in 2023" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="References | Reproducible Science Final Roject" />
+  <meta name="twitter:title" content="Chapter 2 Creating a database | Reproducible Science Final Roject" />
   
   <meta name="twitter:description" content="This is a web page created for the final project during the Reproducible Science Course in 2023" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="sharing-your-book.html"/>
-
+<link rel="prev" href="index.html"/>
+<link rel="next" href="cross.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -213,31 +213,74 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="references" class="section level1 unnumbered hasAnchor">
-<h1>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div class="csl-entry">
-Xie, Yihui. 2015. <em>Dynamic Documents with <span>R</span> and Knitr</em>. 2nd ed. Boca Raton, Florida: Chapman; Hall/CRC. <a href="http://yihui.org/knitr/">http://yihui.org/knitr/</a>.
+<div id="creating-a-database" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Creating a database<a href="creating-a-database.html#creating-a-database" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Below I display how to create a database for my final project in reproducible data science for 2023</p>
+<p>Load all packages needed to create the database</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="creating-a-database.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span></code></pre></div>
+<div id="establish-the-connection-with-database" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Establish the connection with database<a href="creating-a-database.html#establish-the-connection-with-database" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Here we will establish the connection for the database to the directory using <code>dbconnect</code></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="creating-a-database.html#cb4-1" aria-hidden="true" tabindex="-1"></a>Thesis_database <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), </span>
+<span id="cb4-2"><a href="creating-a-database.html#cb4-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;C:/Users/jaran/Desktop/R/Spr22Classwork/Reproducible Science/Final_Project/SQL_database/Thesis_Database.db&quot;</span>)</span>
+<span id="cb4-3"><a href="creating-a-database.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="creating-a-database.html#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(Thesis_database)</span></code></pre></div>
 </div>
-<div class="csl-entry">
-———. 2023. <em>Bookdown: Authoring Books and Technical Documents with r Markdown</em>. <a href="https://CRAN.R-project.org/package=bookdown">https://CRAN.R-project.org/package=bookdown</a>.
+<div id="creating-tables" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Creating Tables<a href="creating-a-database.html#creating-tables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Below I will create a table using the <code>dbexecute</code> function. Within this function I will then use SQL language to create tables for my database.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="creating-a-database.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(Thesis_database, <span class="st">&quot;CREATE TABLE Lion (</span></span>
+<span id="cb5-2"><a href="creating-a-database.html#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">                                                lion_id varchar(6) NOT NULL,</span></span>
+<span id="cb5-3"><a href="creating-a-database.html#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">                                                sex char(1) CHECK (sex IN (&#39;M&#39;, &#39;F&#39;)),</span></span>
+<span id="cb5-4"><a href="creating-a-database.html#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="st">                                                age char(2),</span></span>
+<span id="cb5-5"><a href="creating-a-database.html#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">                                                capture_date text,</span></span>
+<span id="cb5-6"><a href="creating-a-database.html#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="st">                                                capture_site varchar(25),</span></span>
+<span id="cb5-7"><a href="creating-a-database.html#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="st">                                                PRIMARY KEY (lion_id));&quot;</span>)</span>
+<span id="cb5-8"><a href="creating-a-database.html#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="creating-a-database.html#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(Thesis_database, <span class="st">&quot;CREATE TABLE Capture (</span></span>
+<span id="cb5-10"><a href="creating-a-database.html#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="st">                                                lion_id varchar(6) NOT NULL,</span></span>
+<span id="cb5-11"><a href="creating-a-database.html#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="st">                                                capture_id char(4),</span></span>
+<span id="cb5-12"><a href="creating-a-database.html#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="st">                                                capture_site varchar(25),</span></span>
+<span id="cb5-13"><a href="creating-a-database.html#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="st">                                                capture_date text,</span></span>
+<span id="cb5-14"><a href="creating-a-database.html#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">                                                utm_x  float,</span></span>
+<span id="cb5-15"><a href="creating-a-database.html#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="st">                                                utm_y  float,</span></span>
+<span id="cb5-16"><a href="creating-a-database.html#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="st">                                                PRIMARY KEY (capture_id)</span></span>
+<span id="cb5-17"><a href="creating-a-database.html#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="st">                                                FOREIGN KEY (capture_site) REFERENCES Lion(capture_site)</span></span>
+<span id="cb5-18"><a href="creating-a-database.html#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="st">                                                FOREIGN KEY (lion_id) REFERENCES Lion(lion_id)</span></span>
+<span id="cb5-19"><a href="creating-a-database.html#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="st">                                                FOREIGN KEY (capture_date) REFERENCES Lion(capture_date)</span></span>
+<span id="cb5-20"><a href="creating-a-database.html#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="st">                                                );&quot;</span>)</span>
+<span id="cb5-21"><a href="creating-a-database.html#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="creating-a-database.html#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(Thesis_database, <span class="st">&quot;CREATE TABLE GPS_Collar (</span></span>
+<span id="cb5-23"><a href="creating-a-database.html#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     lion_id varchar(6) NOT NULL,</span></span>
+<span id="cb5-24"><a href="creating-a-database.html#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="st">                                                    lionid_collarid varchar(25)),</span></span>
+<span id="cb5-25"><a href="creating-a-database.html#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     collar_id varchar(10),</span></span>
+<span id="cb5-26"><a href="creating-a-database.html#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     make varchar(25),</span></span>
+<span id="cb5-27"><a href="creating-a-database.html#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     model varchar(25),</span></span>
+<span id="cb5-28"><a href="creating-a-database.html#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     deployment_start text,</span></span>
+<span id="cb5-29"><a href="creating-a-database.html#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     deploymeny_end text,</span></span>
+<span id="cb5-30"><a href="creating-a-database.html#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     PRIMARY KEY (lionid_collarid)</span></span>
+<span id="cb5-31"><a href="creating-a-database.html#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     FOREIGN KEY (lion_id) REFERENCES Lion(lion_id)</span></span>
+<span id="cb5-32"><a href="creating-a-database.html#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     );&quot;</span>)</span>
+<span id="cb5-33"><a href="creating-a-database.html#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="creating-a-database.html#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="fu">dbExecute</span>(Thesis_database, <span class="st">&quot;CREATE TABLE GPS_Locaton (</span></span>
+<span id="cb5-35"><a href="creating-a-database.html#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     locationid varchar(20) NOT NULL,</span></span>
+<span id="cb5-36"><a href="creating-a-database.html#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="st">                                                    lionid_collarid varchar(25),</span></span>
+<span id="cb5-37"><a href="creating-a-database.html#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     collar_id varchar(10),</span></span>
+<span id="cb5-38"><a href="creating-a-database.html#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     localtime text,</span></span>
+<span id="cb5-39"><a href="creating-a-database.html#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     utme_x float,</span></span>
+<span id="cb5-40"><a href="creating-a-database.html#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     utmn_y float,</span></span>
+<span id="cb5-41"><a href="creating-a-database.html#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     PRIMARY KEY (locationid)</span></span>
+<span id="cb5-42"><a href="creating-a-database.html#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="st">                                                     FOREIGN KEY (lionid_collarid) REFERENCES</span></span></code></pre></div>
+
 </div>
 </div>
-</div>
-
-
-
-
-
-
             </section>
 
           </div>
         </div>
       </div>
-<a href="sharing-your-book.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cross.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -268,7 +311,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/USERNAME/REPO/edit/BRANCH/07-references.Rmd",
+"link": "https://github.com/USERNAME/REPO/edit/BRANCH/01-intro.Rmd",
 "text": "Edit"
 },
 "history": {
