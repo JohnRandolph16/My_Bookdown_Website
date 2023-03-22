@@ -23,7 +23,7 @@
 <meta name="author" content="John Randolph" />
 
 
-<meta name="date" content="2023-03-20" />
+<meta name="date" content="2023-03-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -215,12 +215,15 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="creating-a-database" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Creating a database<a href="creating-a-database.html#creating-a-database" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Below I display how to create a database for my final project in reproducible data science for 2023</p>
+<p>Below I display how to create a database for my final project in reproducible data science for 2023.
+Provided is an example databse that we will be creating.</p>
+<p><img src="ThesisDatabase.png" width="639" /></p>
 <p>Load all packages needed to create the database</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="creating-a-database.html#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DBI)</span></code></pre></div>
 <div id="establish-the-connection-with-database" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> Establish the connection with database<a href="creating-a-database.html#establish-the-connection-with-database" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Here we will establish the connection for the database to the directory using <code>dbconnect</code></p>
+<p>library(DBI)
+Here we will establish the connection for the database to the directory using <code>dbconnect</code></p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="creating-a-database.html#cb4-1" aria-hidden="true" tabindex="-1"></a>Thesis_database <span class="ot">&lt;-</span> <span class="fu">dbConnect</span>(RSQLite<span class="sc">::</span><span class="fu">SQLite</span>(), </span>
 <span id="cb4-2"><a href="creating-a-database.html#cb4-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">&quot;C:/Users/jaran/Desktop/R/Spr22Classwork/Reproducible Science/Final_Project/SQL_database/Thesis_Database.db&quot;</span>)</span>
 <span id="cb4-3"><a href="creating-a-database.html#cb4-3" aria-hidden="true" tabindex="-1"></a></span>

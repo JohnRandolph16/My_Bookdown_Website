@@ -1,7 +1,11 @@
 # Creating a database
 
- Below I display how to create a database for my final project in reproducible data science for 2023
- 
+Below I display how to create a database for my final project in reproducible data science for 2023. 
+Provided is an example databse that we will be creating.
+
+```{r, echo=FALSE}
+knitr::include_graphics("ThesisDatabase.png")
+```
 
 Load all packages needed to create the database
 
@@ -10,7 +14,7 @@ library(DBI)
 ```
 
 ## Establish the connection with database
-
+library(DBI)
 Here we will establish the connection for the database to the directory using `dbconnect`
 
 ```{r, eval=FALSE}
