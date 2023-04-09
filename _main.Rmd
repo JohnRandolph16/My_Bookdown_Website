@@ -1,0 +1,326 @@
+--- 
+title: "Reproducible Science Final Project"
+author: "John Randolph"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: |
+  This is a web page created for the final project during the Reproducible Science Course in 2023
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+---
+
+# About
+
+This website is created to display and walk through the GPS cleaning process for collared mountain lion data. 
+
+<!--chapter:end:index.Rmd-->
+
+# Creating a database
+
+Below I display how to create a database for my final project in reproducible data science for 2023. 
+Provided is an example databse that we will be creating.
+
+```{r, echo=FALSE}
+knitr::include_graphics("ThesisDatabase.png")
+```
+
+Load all packages needed to create the database
+
+```{r, eval=FALSE}
+library(DBI)
+```
+
+## Establish the connection with database
+library(DBI)
+Here we will establish the connection for the database to the directory using `dbconnect`
+
+```{r, eval=FALSE}
+Thesis_database <- dbConnect(RSQLite::SQLite(), 
+                        "C:/Users/jaran/Desktop/R/Spr22Classwork/Reproducible Science/Final_Project/SQL_database/Thesis_Database.db")
+
+class(Thesis_database)
+```
+
+## Creating Tables
+
+Below I will create a table using the `dbexecute` function. Within this function I will then use SQL language to create tables for my database.
+
+```{r, eval=FALSE}
+dbExecute(Thesis_database, "CREATE TABLE Lion (
+                                                lion_id varchar(6) NOT NULL,
+                                                sex char(1) CHECK (sex IN ('M', 'F')),
+                                                age char(2),
+                                                capture_date text,
+                                                capture_site varchar(25),
+                                                PRIMARY KEY (lion_id));")
+
+dbExecute(Thesis_database, "CREATE TABLE Capture (
+                                                lion_id varchar(6) NOT NULL,
+                                                capture_id char(4),
+                                                capture_site varchar(25),
+                                                capture_date text,
+                                                utm_x  float,
+                                                utm_y  float,
+                                                PRIMARY KEY (capture_id)
+                                                FOREIGN KEY (capture_site) REFERENCES Lion(capture_site)
+                                                FOREIGN KEY (lion_id) REFERENCES Lion(lion_id)
+                                                FOREIGN KEY (capture_date) REFERENCES Lion(capture_date)
+                                                );")
+
+dbExecute(Thesis_database, "CREATE TABLE GPS_Collar (
+                                                     lion_id varchar(6) NOT NULL,
+                                                    lionid_collarid varchar(25)),
+                                                     collar_id varchar(10),
+                                                     make varchar(25),
+                                                     model varchar(25),
+                                                     deployment_start text,
+                                                     deploymeny_end text,
+                                                     PRIMARY KEY (lionid_collarid)
+                                                     FOREIGN KEY (lion_id) REFERENCES Lion(lion_id)
+                                                     );")
+
+dbExecute(Thesis_database, "CREATE TABLE GPS_Locaton (
+                                                     locationid varchar(20) NOT NULL,
+                                                    lionid_collarid varchar(25),
+                                                     collar_id varchar(10),
+                                                     localtime text,
+                                                     utme_x float,
+                                                     utmn_y float,
+                                                     PRIMARY KEY (locationid)
+                                                     FOREIGN KEY (lionid_collarid) REFERENCES
+
+```
+
+
+<!--chapter:end:01-intro.Rmd-->
+
+# Processing Raw Data
+
+Load all packages needed to begin processing data.
+
+```{r, eval==FALSE}
+
+library(tidyverse)
+library(magrittr)
+library(dplyr)
+library(purrr)
+library(lubridate)
+library(amt)
+library(elevatr)
+library(sf)
+library(sp)
+
+```
+
+Next we will read the raw data in for one individual. THe code is also piped to change all upper case to lower and to remove spaces
+
+```{r, eval=FALSE}
+
+Lion <- read_csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Raw_Data/IWS_Lions/FromDave/M280_GPS_Collar31756_20230112141501.csv", locale=locale(encoding="latin1")) %>% 
+  rename_with(~ tolower(gsub("[[:punct:]]", "", .))) %>% 
+  rename_with(~gsub(" ", "",  .))
+
+```
+
+Here we selected columns to work with and removed all NA's in latitude and longitude. Here, I also shift my utctime to character so I can later convert it to GMT
+
+
+```{r, eval=FALSE}
+
+Lion %<>%
+  select(no, collarid, utcdate, utctime, latitude, longitude, dop, fixtype) %>%
+  filter(is.na(latitude) == F | is.na(longitude) == F) %>%
+  mutate(utctime = as.character(utctime))
+
+```
+
+
+Here we will paste the utcdate and utctime together and convert it into GMT time then remove the old utcdate and utctime columns
+
+```{r, eval=FALSE}
+
+Lion %<>% 
+  mutate(GMT = as.POSIXct(paste(utcdate, utctime, sep = " "), 
+                          tryFormats = c("%m/%d/%Y %I:%M:%S %p",              
+                                         "%m/%d/%y %H:%M:%S", 
+                                         "%m/%d/%Y %H:%M:%S"), tz="GMT")) %>%  
+  select(-c(utcdate, utctime))    
+
+```
+
+
+Next we will convert the GMT time to localetime for the timezone this lion was collared in(Pacific). We convert and then lock the local time to GMT. Once complted we remove the column GMT. 
+
+```{r, eval=FALSE}
+
+Lion %<>% 
+  mutate(localtime = with_tz(GMT, tz = "Etc/GMT+8")) %>% 
+  mutate(localtime = force_tz(localtime, tzone = "GMT")) %>%
+  select(-c(GMT))
+
+
+```
+
+
+Below I now filter the time the collar was on the mountain lion. I set this up to begin one day after collaring and end one day before the collar drop off mechanism is triggered. In this case the lion was collared on 11/17/2018 and the collar dropped on on 6/29/2022.
+
+```{r, eval=FALSE}
+
+Lion %<>% filter(localtime >= "2021/11/18" & localtime <= "2022/6/28")
+
+```
+
+Now we will access the satellite dop ratings for each GPS point to filter thrown points. For my project we decided to remove any dop that is higher than 6. 
+
+```{r}
+
+Lion$dop
+max(Lion$dop)
+
+Lion %<>% filter(dop <= 6)
+
+```
+
+The last part of processing is to convert the latitude and longitude to utme and utmn. Below I transformed longitude and latitude to a simple feature spatial object and then to UTMs in WGS84.
+
+```{r}
+
+Lion %<>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326, na.fail = FALSE, remove = FALSE) %>% # transform to simple feature spatial object
+  st_transform(32610) %>% # transform to utms in WGS84
+  mutate(utme = unlist(map(geometry, 1)), utmn = unlist(map(geometry, 2)))
+
+```
+
+Finally inspect data that all conversions and filtering is correct and export the processed data to its new folder.
+
+```{r}
+names(Lion)
+head(Lion)
+summary(Lion$latitude) 
+
+M280 <- saveRDS(Lion, "C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/California/M280.rds")
+M280 <- write.csv(Lion, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/California/M280.csv")
+
+
+```
+
+
+
+
+
+
+
+
+<!--chapter:end:02-Data-Processing.Rmd-->
+
+# Parts
+
+You can add parts to organize one or more book chapters together. Parts can be inserted at the top of an .Rmd file, before the first-level chapter heading in that same file. 
+
+Add a numbered part: `# (PART) Act one {-}` (followed by `# A chapter`)
+
+Add an unnumbered part: `# (PART\*) Act one {-}` (followed by `# A chapter`)
+
+Add an appendix as a special kind of un-numbered part: `# (APPENDIX) Other stuff {-}` (followed by `# A chapter`). Chapters in an appendix are prepended with letters instead of numbers.
+
+
+
+
+<!--chapter:end:03-parts.Rmd-->
+
+# Footnotes and citations 
+
+## Footnotes
+
+Footnotes are put inside the square brackets after a caret `^[]`. Like this one ^[This is a footnote.]. 
+
+## Citations
+
+Reference items in your bibliography file(s) using `@key`.
+
+For example, we are using the **bookdown** package [@R-bookdown] (check out the last code chunk in index.Rmd to see how this citation key was added) in this sample book, which was built on top of R Markdown and **knitr** [@xie2015] (this citation was added manually in an external file book.bib). 
+Note that the `.bib` files need to be listed in the index.Rmd with the YAML `bibliography` key.
+
+
+The RStudio Visual Markdown Editor can also make it easier to insert citations: <https://rstudio.github.io/visual-markdown-editing/#/citations>
+
+<!--chapter:end:04-citations.Rmd-->
+
+# Blocks
+
+## Equations
+
+Here is an equation.
+
+\begin{equation} 
+  f\left(k\right) = \binom{n}{k} p^k\left(1-p\right)^{n-k}
+  (\#eq:binom)
+\end{equation} 
+
+You may refer to using `\@ref(eq:binom)`, like see Equation \@ref(eq:binom).
+
+
+## Theorems and proofs
+
+Labeled theorems can be referenced in text using `\@ref(thm:tri)`, for example, check out this smart theorem \@ref(thm:tri).
+
+::: {.theorem #tri}
+For a right triangle, if $c$ denotes the *length* of the hypotenuse
+and $a$ and $b$ denote the lengths of the **other** two sides, we have
+$$a^2 + b^2 = c^2$$
+:::
+
+Read more here <https://bookdown.org/yihui/bookdown/markdown-extensions-by-bookdown.html>.
+
+## Callout blocks
+
+
+The R Markdown Cookbook provides more help on how to use custom blocks to design your own callouts: https://bookdown.org/yihui/rmarkdown-cookbook/custom-blocks.html
+
+<!--chapter:end:05-blocks.Rmd-->
+
+# Sharing your book
+
+## Publishing
+
+HTML books can be published online, see: https://bookdown.org/yihui/bookdown/publishing.html
+
+## 404 pages
+
+By default, users will be directed to a 404 page if they try to access a webpage that cannot be found. If you'd like to customize your 404 page instead of using the default, you may add either a `_404.Rmd` or `_404.md` file to your project root and use code and/or Markdown syntax.
+
+## Metadata for sharing
+
+Bookdown HTML books will provide HTML metadata for social sharing on platforms like Twitter, Facebook, and LinkedIn, using information you provide in the `index.Rmd` YAML. To setup, set the `url` for your book and the path to your `cover-image` file. Your book's `title` and `description` are also used.
+
+
+
+This `gitbook` uses the same social sharing data across all chapters in your book- all links shared will look the same.
+
+Specify your book's source repository on GitHub using the `edit` key under the configuration options in the `_output.yml` file, which allows users to suggest an edit by linking to a chapter's source file. 
+
+Read more about the features of this output format here:
+
+https://pkgs.rstudio.com/bookdown/reference/gitbook.html
+
+Or use:
+
+```{r eval=FALSE}
+?bookdown::gitbook
+```
+
+
+
+<!--chapter:end:06-share.Rmd-->
+
+`r if (knitr::is_html_output()) '
+# References {-}
+'`
+
+<!--chapter:end:07-references.Rmd-->
+
