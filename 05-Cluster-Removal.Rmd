@@ -1,0 +1,52 @@
+#  Data Resampling
+
+Load all packages needed to remove clusters.
+
+```{r, eval==FALSE}
+
+library(dplyr)
+library(magrittr)
+
+
+```
+
+Next we will read the ressampled data and the cluster identified data in for one individual and inspect data
+
+```{r, eval=FALSE}
+
+ProssData <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv")
+
+RemoveClust <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ClustersforRemoval/California/M280ClusterRemoval.csv")
+
+```
+
+Next we will select PointID in the RemoveClust and change it to no so that both files have an identical column. 
+
+
+```{r, eval=FALSE}
+
+RemoveClust <- RemoveClust %>% dplyr::select(no = "PointID")
+
+```
+
+
+Lastly, we will `anti_join the ProssData and RemoveClust by the no column to remove all cluster points from our data.
+
+```{r, eval=FALSE}
+
+CleanedData <- anti_join(ProssData, RemoveClust, by = "no")
+```
+
+Finally export all data into a new folder called cleaned data and begin your analysis!!!!
+
+```{r}
+
+M280 <- saveRDS(CleanedData, "C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/CleanedData/California/Dop6/M2804hrCleaned.rds")
+M280 <- write.csv(CleanedData, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/CleanedData/California/Dop6/M2804hrCleaned.csv", row.names = F)
+
+
+```
+
+
+
+

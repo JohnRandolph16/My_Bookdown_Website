@@ -16,7 +16,7 @@ library(sp)
 
 ```
 
-Next we will read the raw data in for one individual. THe code is also piped to change all upper case to lower and to remove spaces
+Next we will read the raw data in for one individual. The code is also piped to change all upper case to lower and to remove spaces
 
 ```{r, eval=FALSE}
 

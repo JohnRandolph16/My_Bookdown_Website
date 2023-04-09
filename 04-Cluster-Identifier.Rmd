@@ -1,0 +1,116 @@
+#  Cluster Identifiation
+
+Load all packages needed to begin and source material. This code was created by Peter Mahoney and can be found at https://github.com/PMahoney29/rAnimalSiteFidelity 
+
+```{r, eval==FALSE}
+
+library(bcpa)
+library(rgdal)
+library(rgeos)
+library(maptools)
+library(foreach)
+library(doParallel)
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(raster)
+
+source("./Code/rASF.R")
+
+```
+
+Next we will read the resampled data in for one individual and convert the localtime to a specific format of mdy_hm. Next I removed duplicates from the data. 
+
+```{r, eval=FALSE}
+
+d <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv")
+d$dt <- mdy_hm(d$localtime, tz = 'GMT')
+d <- d[!duplicated(d$dt),]
+coordinates(d) <- d[, c('longitude', 'latitude')]
+proj4string(d) <- CRS('+proj=longlat +datum=WGS84')
+
+
+```
+
+Now we will be sure to project for accurate measurements and note the zone of which the collared individual was collared.
+
+
+```{r, eval=FALSE}
+
+utmProj = CRS("+proj=utm +zone=10 +datum=WGS84")
+d <- spTransform(d, utmProj)
+str(d)
+
+
+```
+
+
+Now running a function from the pulled github package to assign all data in a specific order.
+
+```{r, eval=FALSE}
+
+clustxy <- ClusterXY(xy = coordinates(d), dt = d$dt, 
+                     proj4string = utmProj, id = '31756', 
+                     PointID = 'no', Data = d@data)
+
+```
+
+Next we assign the parameters to the cluster identifier. nfixes is the total number of points in the location to be considered a cluster. sbuffer is the radius around the cluster that points can be found in. tbuffer is the amount of time that has to past without a new point at the cluster for the cluster to end. intime, inPar, and nCores allow for smoother running of the identifier code. 
+
+```{r}
+
+nfixes = 4
+sbuffer = 150
+tbuffer = 24
+intime = T
+
+inPar = TRUE
+nCores = detectCores() - 1
+
+```
+
+Run code below to identify clusters with parameters above.
+
+```{r}
+
+M280_clusters <- visualize_clusters(clustxy, nfixes, sbuffer, tbuffer, intime,
+                                    inPar = inPar, nCores = nCores)
+
+summary(M280_clusters)
+
+```
+
+Below I created a for loop to extract all the points in each cluster that was identified but leave the first and last one out. THis will allow me to have a starting and or end point for running an iSSA.
+
+
+```{r}
+
+temp <- M280_clusters@Data[[1]]
+first <- nrow(temp)
+last <- 1
+toremove <- temp[-c(first,last),]
+
+# Forloop for rest of the dataset
+
+for (i in 2:length(M280_clusters@Data)){
+  temp <- M280_clusters@Data[[i]]
+  first <- nrow(temp)
+  last <- 1
+  tempnew <- temp[-c(first,last),]
+  toremove <- rbind(toremove, tempnew)
+}
+
+```
+
+Lastly export all points that are provided from the for loop above. 
+
+```{r}
+
+M280 <- saveRDS(toremove, "C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ClustersforRemoval/M280ClusterRemoval.rds")
+M280 <- write.csv(toremove, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ClustersforRemoval/M280ClusterRemoval.csv", row.names = F)
+
+```
+
+
+
+
