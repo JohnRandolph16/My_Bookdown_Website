@@ -2,7 +2,7 @@
 
 Load all packages needed to begin resampling.
 
-```{r, eval==FALSE}
+```{r library3}
 
 library(tidyverse)
 library(magrittr)
@@ -18,7 +18,7 @@ library(sp)
 
 Next we will read the processed data in for one individual and inspect data
 
-```{r, eval=FALSE}
+```{r data}
 
 lion <- readRDS("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/California/Dop6/M280.rds")
 
@@ -29,7 +29,7 @@ head(lion)
 Now we will transform the processed data into a track to begin our resampling process. 
 
 
-```{r, eval=FALSE}
+```{r trk}
 
 trk <- lion %>% mk_track(.x = utme, 
                          .y = utmn, 
@@ -44,7 +44,7 @@ trk <- lion %>% mk_track(.x = utme,
 
 Next we will use `track resample` to convert our localtime to down sample to 4 hour points with 10 minute tolerance. 
 
-```{r, eval=FALSE}
+```{r resample}
 
 trk %<>% track_resample(rate = hours(4), tolerance = minutes(10)) %>% 
   time_of_day(include.crepuscule = TRUE)
@@ -54,11 +54,11 @@ trk %<>% track_resample(rate = hours(4), tolerance = minutes(10)) %>%
 Last we will check to see if the data was resampled propoerly then extract the data out of the track and into a new object.
 
 
-```{r}
+```{r organize}
 
 head(trk)
 
-lion <- trk %>% select(no, collarid, latitude, longitude, localtime = t_, utme = x_, utmn = y_, dop, fixtype, geometry )
+lion <- trk %>% dplyr::select(no, collarid, latitude, longitude, localtime = t_, utme = x_, utmn = y_, dop, fixtype, geometry )
 
 head(lion)
 
@@ -66,7 +66,7 @@ head(lion)
 
 Export data into a new folder to organize different resampled data. 
 
-```{r}
+```{r export}
 
 M280 <- saveRDS(lion, "C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.rds")
 M280 <- write.csv(lion, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv", row.names = F)

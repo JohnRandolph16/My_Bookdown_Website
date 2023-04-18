@@ -4,26 +4,24 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Page not found | Reproducible Science Final Project</title>
-  <meta name="description" content="This is a web page created for the final project during the Reproducible Science Course in 2023" />
+  <title>Chapter 1 Data Resampling | 05-Cluster-Removal.knit</title>
+  <meta name="description" content="" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Page not found | Reproducible Science Final Project" />
+  <meta property="og:title" content="Chapter 1 Data Resampling | 05-Cluster-Removal.knit" />
   <meta property="og:type" content="book" />
   
-  <meta property="og:description" content="This is a web page created for the final project during the Reproducible Science Course in 2023" />
-  <meta name="github-repo" content="rstudio/bookdown-demo" />
+  
+  
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Page not found | Reproducible Science Final Project" />
+  <meta name="twitter:title" content="Chapter 1 Data Resampling | 05-Cluster-Removal.knit" />
   
-  <meta name="twitter:description" content="This is a web page created for the final project during the Reproducible Science Course in 2023" />
+  
   
 
-<meta name="author" content="John Randolph" />
 
 
-<meta name="date" content="2023-04-10" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -136,16 +134,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">A Minimal Book Example</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> About</a></li>
-<li class="chapter" data-level="2" data-path="creating-a-database.html"><a href="creating-a-database.html"><i class="fa fa-check"></i><b>2</b> Creating a database</a>
-<ul>
-<li class="chapter" data-level="2.1" data-path="creating-a-database.html"><a href="creating-a-database.html#establish-the-connection-with-database"><i class="fa fa-check"></i><b>2.1</b> Establish the connection with database</a></li>
-<li class="chapter" data-level="2.2" data-path="creating-a-database.html"><a href="creating-a-database.html#creating-tables"><i class="fa fa-check"></i><b>2.2</b> Creating Tables</a></li>
-</ul></li>
-<li class="chapter" data-level="3" data-path="processing-raw-data.html"><a href="processing-raw-data.html"><i class="fa fa-check"></i><b>3</b> Processing Raw Data</a></li>
-<li class="chapter" data-level="4" data-path="data-resampling.html"><a href="data-resampling.html"><i class="fa fa-check"></i><b>4</b> Data Resampling</a></li>
-<li class="chapter" data-level="5" data-path="cluster-identifiation.html"><a href="cluster-identifiation.html"><i class="fa fa-check"></i><b>5</b> Cluster Identifiation</a></li>
-<li class="chapter" data-level="6" data-path="data-resampling-1.html"><a href="data-resampling-1.html"><i class="fa fa-check"></i><b>6</b> Data Resampling</a></li>
+<li class="chapter" data-level="1" data-path=""><a href="#data-resampling"><i class="fa fa-check"></i><b>1</b> Data Resampling</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -158,7 +147,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Reproducible Science Final Project</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./"></a>
           </h1>
         </div>
 
@@ -166,11 +155,33 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="page-not-found" class="section level1">
-<h1>Page not found</h1>
-<p>The page you requested cannot be found (perhaps it was moved or renamed).</p>
-<p>You may want to try searching to find the page's new location, or use
-the table of contents to find the page you are looking for.</p>
+<!--bookdown:title:end-->
+<!--bookdown:title:start-->
+<div id="data-resampling" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Data Resampling<a href="#data-resampling" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Load all packages needed to remove clusters.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 4.2.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(magrittr)</span></code></pre></div>
+<p>Next we will read the ressampled data and the cluster identified data in for one individual and inspect data</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>ProssData <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>RemoveClust <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ClustersforRemoval/California/M280ClusterRemoval.csv&quot;</span>)</span></code></pre></div>
+<p>Next we will select PointID in the RemoveClust and change it to no so that both files have an identical column.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>RemoveClust <span class="ot">&lt;-</span> RemoveClust <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">no =</span> <span class="st">&quot;PointID&quot;</span>)</span></code></pre></div>
+<p>Lastly, we will `anti_join the ProssData and RemoveClust by the no column to remove all cluster points from our data.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>CleanedData <span class="ot">&lt;-</span> <span class="fu">anti_join</span>(ProssData, RemoveClust, <span class="at">by =</span> <span class="st">&quot;no&quot;</span>)</span></code></pre></div>
+<p>Finally export all data into a new folder called cleaned data and begin your analysis!!!!</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>M280 <span class="ot">&lt;-</span> <span class="fu">saveRDS</span>(CleanedData, <span class="st">&quot;C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/CleanedData/California/Dop6/M2804hrCleaned.rds&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>M280 <span class="ot">&lt;-</span> <span class="fu">write.csv</span>(CleanedData, <span class="at">file=</span><span class="st">&quot;C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/CleanedData/California/Dop6/M2804hrCleaned.csv&quot;</span>, <span class="at">row.names =</span> F)</span></code></pre></div>
 </div>
             </section>
 
@@ -220,11 +231,8 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["_main.pdf", "_main.epub"],
-"search": {
-"engine": "fuse",
-"options": null
-},
+"download": null,
+"search": false,
 "toc": {
 "collapse": "subsection"
 }

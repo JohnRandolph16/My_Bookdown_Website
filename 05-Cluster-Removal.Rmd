@@ -2,7 +2,7 @@
 
 Load all packages needed to remove clusters.
 
-```{r, eval==FALSE}
+```{r library 5}
 
 library(dplyr)
 library(magrittr)
@@ -12,7 +12,7 @@ library(magrittr)
 
 Next we will read the ressampled data and the cluster identified data in for one individual and inspect data
 
-```{r, eval=FALSE}
+```{r}
 
 ProssData <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv")
 
@@ -23,7 +23,7 @@ RemoveClust <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/
 Next we will select PointID in the RemoveClust and change it to no so that both files have an identical column. 
 
 
-```{r, eval=FALSE}
+```{r}
 
 RemoveClust <- RemoveClust %>% dplyr::select(no = "PointID")
 
@@ -32,7 +32,7 @@ RemoveClust <- RemoveClust %>% dplyr::select(no = "PointID")
 
 Lastly, we will `anti_join the ProssData and RemoveClust by the no column to remove all cluster points from our data.
 
-```{r, eval=FALSE}
+```{r}
 
 CleanedData <- anti_join(ProssData, RemoveClust, by = "no")
 ```

@@ -2,7 +2,7 @@
 
 Load all packages needed to begin processing data.
 
-```{r, eval==FALSE}
+```{r library2}
 
 library(tidyverse)
 library(magrittr)
@@ -18,7 +18,7 @@ library(sp)
 
 Next we will read the raw data in for one individual. The code is also piped to change all upper case to lower and to remove spaces
 
-```{r, eval=FALSE}
+```{r raw_data}
 
 Lion <- read_csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Raw_Data/IWS_Lions/FromDave/M280_GPS_Collar31756_20230112141501.csv", locale=locale(encoding="latin1")) %>% 
   rename_with(~ tolower(gsub("[[:punct:]]", "", .))) %>% 
@@ -28,57 +28,53 @@ Lion <- read_csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Raw_Data/IWS_Lions/F
 
 Here we selected columns to work with and removed all NA's in latitude and longitude. Here, I also shift my utctime to character so I can later convert it to GMT
 
-
-```{r, eval=FALSE}
+```{r filter_NAs}
 
 Lion %<>%
-  select(no, collarid, utcdate, utctime, latitude, longitude, dop, fixtype) %>%
+  dplyr::select(no, collarid, utcdate, utctime, latitude, longitude, dop, fixtype) %>%
   filter(is.na(latitude) == F | is.na(longitude) == F) %>%
   mutate(utctime = as.character(utctime))
 
 ```
 
-
 Here we will paste the utcdate and utctime together and convert it into GMT time then remove the old utcdate and utctime columns
 
-```{r, eval=FALSE}
+```{r utctimes}
 
 Lion %<>% 
   mutate(GMT = as.POSIXct(paste(utcdate, utctime, sep = " "), 
                           tryFormats = c("%m/%d/%Y %I:%M:%S %p",              
                                          "%m/%d/%y %H:%M:%S", 
                                          "%m/%d/%Y %H:%M:%S"), tz="GMT")) %>%  
-  select(-c(utcdate, utctime))    
+  dplyr::select(-c(utcdate, utctime))    
 
 ```
 
+Next we will convert the GMT time to localetime for the timezone this lion was collared in(Pacific). We convert and then lock the local time to GMT. Once complted we remove the column GMT.
 
-Next we will convert the GMT time to localetime for the timezone this lion was collared in(Pacific). We convert and then lock the local time to GMT. Once complted we remove the column GMT. 
-
-```{r, eval=FALSE}
+```{r GMTtime}
 
 Lion %<>% 
   mutate(localtime = with_tz(GMT, tz = "Etc/GMT+8")) %>% 
   mutate(localtime = force_tz(localtime, tzone = "GMT")) %>%
-  select(-c(GMT))
+  dplyr::select(-c(GMT))
 
 
 ```
 
-
 Below I now filter the time the collar was on the mountain lion. I set this up to begin one day after collaring and end one day before the collar drop off mechanism is triggered. In this case the lion was collared on 11/17/2018 and the collar dropped on on 6/29/2022.
 
-```{r, eval=FALSE}
+```{r dates_collared}
 
 Lion %<>% filter(localtime >= "2021/11/18" & localtime <= "2022/6/28")
 
 ```
 
-Now we will access the satellite dop ratings for each GPS point to filter thrown points. For my project we decided to remove any dop that is higher than 6. 
+Now we will access the satellite dop ratings for each GPS point to filter thrown points. For my project we decided to remove any dop that is higher than 6.
 
-```{r}
+```{r filter_dop}
 
-Lion$dop
+head(Lion$dop)
 max(Lion$dop)
 
 Lion %<>% filter(dop <= 6)
@@ -87,7 +83,7 @@ Lion %<>% filter(dop <= 6)
 
 The last part of processing is to convert the latitude and longitude to utme and utmn. Below I transformed longitude and latitude to a simple feature spatial object and then to UTMs in WGS84.
 
-```{r}
+```{r convert_utm}
 
 Lion %<>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326, na.fail = FALSE, remove = FALSE) %>% # transform to simple feature spatial object
@@ -98,7 +94,7 @@ Lion %<>%
 
 Finally inspect data that all conversions and filtering is correct and export the processed data to its new folder.
 
-```{r}
+```{r export_data}
 names(Lion)
 head(Lion)
 summary(Lion$latitude) 
@@ -108,10 +104,3 @@ M280 <- write.csv(Lion, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_
 
 
 ```
-
-
-
-
-
-
-

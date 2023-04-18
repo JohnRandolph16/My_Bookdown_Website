@@ -1,0 +1,8 @@
+about
+creating-a-database
+establish-the-connection-with-database
+creating-tables
+processing-raw-data
+data-resampling
+cluster-identifiation
+data-resampling-1

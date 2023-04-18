@@ -2,7 +2,7 @@
 
 Load all packages needed to begin and source material. This code was created by Peter Mahoney and can be found at https://github.com/PMahoney29/rAnimalSiteFidelity 
 
-```{r, eval==FALSE}
+```{r library4}
 
 library(bcpa)
 library(rgdal)
@@ -15,13 +15,13 @@ library(ggplot2)
 library(dplyr)
 library(raster)
 
-source("./Code/rASF.R")
+source("rASF.R")
 
 ```
 
 Next we will read the resampled data in for one individual and convert the localtime to a specific format of mdy_hm. Next I removed duplicates from the data. 
 
-```{r, eval=FALSE}
+```{r data3}
 
 d <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv")
 d$dt <- mdy_hm(d$localtime, tz = 'GMT')
@@ -35,7 +35,7 @@ proj4string(d) <- CRS('+proj=longlat +datum=WGS84')
 Now we will be sure to project for accurate measurements and note the zone of which the collared individual was collared.
 
 
-```{r, eval=FALSE}
+```{r}
 
 utmProj = CRS("+proj=utm +zone=10 +datum=WGS84")
 d <- spTransform(d, utmProj)
@@ -47,7 +47,7 @@ str(d)
 
 Now running a function from the pulled github package to assign all data in a specific order.
 
-```{r, eval=FALSE}
+```{r}
 
 clustxy <- ClusterXY(xy = coordinates(d), dt = d$dt, 
                      proj4string = utmProj, id = '31756', 
