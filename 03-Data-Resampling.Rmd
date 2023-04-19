@@ -58,7 +58,7 @@ Last we will check to see if the data was resampled propoerly then extract the d
 
 head(trk)
 
-lion <- trk %>% dplyr::select(no, collarid, latitude, longitude, localtime = t_, utme = x_, utmn = y_, dop, fixtype, geometry )
+lion <- trk %>% dplyr::select(no, collarid, latitude, longitude, localtime = t_, utme = x_, utmn = y_, dop, fixtype)
 
 head(lion)
 
@@ -69,7 +69,7 @@ Export data into a new folder to organize different resampled data.
 ```{r export}
 
 M280 <- saveRDS(lion, "C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.rds")
-M280 <- write.csv(lion, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv", row.names = F)
+M280 <- write.csv(lion, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv", row.names = FALSE)
 
 
 ```

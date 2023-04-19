@@ -88,7 +88,8 @@ The last part of processing is to convert the latitude and longitude to utme and
 Lion %<>%
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326, na.fail = FALSE, remove = FALSE) %>% # transform to simple feature spatial object
   st_transform(32610) %>% # transform to utms in WGS84
-  mutate(utme = unlist(map(geometry, 1)), utmn = unlist(map(geometry, 2)))
+  mutate(utme = unlist(map(geometry, 1)), utmn = unlist(map(geometry, 2))) %>% 
+  st_drop_geometry()
 
 ```
 
@@ -98,6 +99,8 @@ Finally inspect data that all conversions and filtering is correct and export th
 names(Lion)
 head(Lion)
 summary(Lion$latitude) 
+colnames(Lion)
+ncol(Lion)
 
 M280 <- saveRDS(Lion, "C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/California/M280.rds")
 M280 <- write.csv(Lion, file="C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/California/M280.csv")

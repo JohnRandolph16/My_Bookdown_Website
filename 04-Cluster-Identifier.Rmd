@@ -24,7 +24,7 @@ Next we will read the resampled data in for one individual and convert the local
 ```{r data3}
 
 d <- read.csv("C:/Users/jaran/Desktop/USU_Thesis_Project/Cleaned_Data/ProcessedData/ResampledData/California/4hrs/M280.csv")
-d$dt <- mdy_hm(d$localtime, tz = 'GMT')
+d$dt <- ymd_hms(d$localtime, tz = 'GMT')
 d <- d[!duplicated(d$dt),]
 coordinates(d) <- d[, c('longitude', 'latitude')]
 proj4string(d) <- CRS('+proj=longlat +datum=WGS84')
